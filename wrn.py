@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #coding=utf-8
 from __future__ import print_function
-import MySQLdb as db
+import sqlite3 as db
 from collections import defaultdict
 import subprocess
 import warnings
@@ -12,18 +12,19 @@ import shlex
 
 options = defaultdict(str)
 conn = None
-warnings.filterwarnings('ignore', category=db.Warning)
+# warnings.filterwarnings('ignore', category=db.Warning)
 def init_db():
     global conn
-    conn = db.connect("localhost",os.environ["MYSQL_USER"], os.environ["MYSQL_PASS"], charset="utf8")
+    # conn = db.connect("localhost",os.environ["MYSQL_USER"], os.environ["MYSQL_PASS"], charset="utf8")
+    conn = db.connect("wrn.db")
     cursor = conn.cursor()
     try:
         DB_NAME = "WRunner"
         # cursor.execute('DROP DATABASE IF EXISTS %s' %DB_NAME)
-        cursor.execute('CREATE DATABASE IF NOT EXISTS %s' %DB_NAME)
-        conn.select_db(DB_NAME)
+        # cursor.execute('CREATE DATABASE IF NOT EXISTS %s' %DB_NAME)
+        # conn.select_db(DB_NAME)
         TASK_TABLE_NAME = 'TASK_LIST'
-        cursor.execute('CREATE TABLE IF NOT EXISTS %s (id int auto_increment  primary key ,task varchar(30), cmd varchar(100), output text, tag varchar(100))' %TASK_TABLE_NAME)
+        cursor.execute('CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY,task varchar(30), cmd varchar(100), output text, tag varchar(100))' %TASK_TABLE_NAME)
 
         conn.commit()
     except:
@@ -38,9 +39,9 @@ def insert_into_db(text):
     cursor = conn.cursor()
     last_id = -1
     try:
-        cursor.execute("INSERT INTO TASK_LIST (task, cmd, output, tag) VALUES(%s,%s,%s,%s)",
+        cursor.execute("INSERT INTO TASK_LIST (task, cmd, output, tag) VALUES(?,?,?,?)",
             (options['task'], options['cmd'], text, options['tag']))
-        cursor.execute("SELECT LAST_INSERT_ID()")
+        cursor.execute("SELECT last_insert_rowid()")
         result = cursor.fetchone()
         last_id = result[0]
         conn.commit()
@@ -55,7 +56,7 @@ def query_from_db(text):
     global conn
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM TASK_LIST WHERE id=%s OR tag=%s OR task=%s",
+        cursor.execute("SELECT * FROM TASK_LIST WHERE id=? OR tag=? OR task=?",
             (text, text, text))
         result = cursor.fetchall()
         for line in result:
