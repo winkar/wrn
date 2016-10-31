@@ -129,20 +129,20 @@ def main():
     proces = None
     try:
         process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
-        while process.poll() is None:
-            if process.stdout is None:
+        # while process.poll() is None:
+        #     if process.stdout is None:
+        #         break
+        for line in iter(process.stdout.readline, ''):
+            if not line:
                 break
-            for line in iter(process.stdout.readline, ''):
-                if not line:
-                    break
-                line_str = line.decode("utf-8")
-                print(line_str, file=sys.stderr ,end='')
-                output += line_str
-        if process.stdout is not None:
-            last_output = process.stdout.read().decode("utf-8")
-            output += last_output
-            if last_output:
-                print(last_output, file=sys.stderr)
+            line_str = line.decode("utf-8")
+            print(line_str, file=sys.stderr ,end='')
+            output += line_str
+        # if process.stdout is not None:
+        #     last_output = process.stdout.read().decode("utf-8")
+        #     output += last_output
+        #     if last_output:
+        #         print(last_output, file=sys.stderr)
             # line = process.stdout.readline()
             # if line:
             #     line_str = line.decode("utf-8")
