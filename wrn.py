@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #coding=utf-8
-from __future__ import print_function
+# from __future__ import print_function
 import sqlite3 as db
 from collections import defaultdict
 import subprocess
@@ -12,17 +12,13 @@ import shlex
 
 options = defaultdict(str)
 conn = None
-# warnings.filterwarnings('ignore', category=db.Warning)
 def init_db():
     global conn
-    # conn = db.connect("localhost",os.environ["MYSQL_USER"], os.environ["MYSQL_PASS"], charset="utf8")
     conn = db.connect("wrn.db")
     cursor = conn.cursor()
     try:
         DB_NAME = "WRunner"
-        # cursor.execute('DROP DATABASE IF EXISTS %s' %DB_NAME)
-        # cursor.execute('CREATE DATABASE IF NOT EXISTS %s' %DB_NAME)
-        # conn.select_db(DB_NAME)
+
         TASK_TABLE_NAME = 'TASK_LIST'
         cursor.execute('CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY,task varchar(30), cmd varchar(100), output text, tag varchar(100))' %TASK_TABLE_NAME)
 
@@ -130,25 +126,13 @@ def main():
     proces = None
     try:
         process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
-        # while process.poll() is None:
-        #     if process.stdout is None:
-        #         break
+
         for line in iter(process.stdout.readline, ''):
             if not line:
                 break
             line_str = line.decode("utf-8")
             print(line_str, file=sys.stderr ,end='')
             output += line_str
-        # if process.stdout is not None:
-        #     last_output = process.stdout.read().decode("utf-8")
-        #     output += last_output
-        #     if last_output:
-        #         print(last_output, file=sys.stderr)
-            # line = process.stdout.readline()
-            # if line:
-            #     line_str = line.decode("utf-8")
-            #     print(line_str, file=sys.stderr, end='')
-            #     output += line_str
 
         last_id = insert_into_db(output)
         print(last_id)
