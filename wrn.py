@@ -2,6 +2,7 @@
 #coding=utf-8
 from __future__ import print_function
 from __future__ import unicode_literals
+
 import sqlite3 as db
 from collections import defaultdict
 import subprocess
@@ -10,6 +11,7 @@ import os
 import os.path
 import sys
 import shlex
+import readline
 
 options = defaultdict(str)
 conn = None
@@ -131,6 +133,14 @@ def main():
         cmd = options["debug_cmd"]
     else:
         cmd = options["cmd"]
+
+    if "prompt" in options:
+        ch = raw_input(options["prompt"] + "[Y/N]:")
+        if ch.lower()=="y" or ch.lower()=="yes":
+            pass
+        else:
+            exit()
+
     print("Cmd executed: {}".format(cmd))
 
     proces = None
