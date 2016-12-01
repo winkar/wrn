@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #coding=utf-8
-# from __future__ import print_function
+from __future__ import print_function
+from __future__ import unicode_literals
 import sqlite3 as db
 from collections import defaultdict
 import subprocess
@@ -99,6 +100,9 @@ def parse_args():
         elif curArg == "query":
             cur+=1
             options["query"] = argv[cur]
+        elif curArg == "--debug":
+            cur+=1
+            options["debug"] = True
         cur += 1
 
 def main():
@@ -108,19 +112,25 @@ def main():
 
     init_db()
 
+    if "query" in options:
+        query_from_db(options['query'])
+        exit()
+
     if "cmd" not in options or "task" not in options:
         print("cmd, task must be provided.")
         exit()
     if "tag" not in options:
         options["tag"]=""
 
-    if "query" in options:
-        query_from_db(options['query'])
-        exit()
+    
 
 
     output = ""
-    cmd = options["cmd"]
+    cmd = ""
+    if options.get("debug", False):
+        cmd = options["debug_cmd"]
+    else:
+        cmd = options["cmd"]
     print("Cmd executed: {}".format(cmd))
 
     proces = None
