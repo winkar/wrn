@@ -105,16 +105,16 @@ def parse_args():
         curArg = argv[cur]
         if curArg == "--cmd" or curArg == "-c":
             cur += 1
-            if "cmd" not in options:
-                options["cmd"]=argv[cur]
+            # if "cmd" not in options:
+            options["cmd"]=argv[cur]
         elif curArg == "--task":
             cur += 1
-            if "task" not in options:
-                options["task"]=argv[cur]
+            # if "task" not in options:
+            options["task"]=argv[cur]
         elif curArg == "--tag" or curArg == "-t":
             cur += 1
-            if "tag" not in options:
-                options["tag"]=argv[cur]
+            # if "tag" not in options:
+            options["tag"]=argv[cur]
         elif curArg == "query":
             cur+=1
             options["query"] = argv[cur]
