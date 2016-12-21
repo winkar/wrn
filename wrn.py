@@ -51,6 +51,22 @@ def insert_into_db(text):
         cursor.close()
     return last_id
 
+def query_last_insert():
+    global conn
+    cursor = conn.cursor()
+    last_id = -1
+    try:
+        # last_id = cursor.lastrowid
+        cursor.execute("SELECT id FROM TASK_LIST  order by id desc limit 0,1")
+        result = cursor.fetchone()
+        last_id = result[0]
+    except:
+        import traceback;traceback.print_exc()
+        conn.rollback()
+    finally:
+        cursor.close()
+    return last_id
+
 def query_from_db(text):
     global conn
     cursor = conn.cursor()
@@ -115,7 +131,10 @@ def main():
     init_db()
 
     if "query" in options:
-        query_from_db(options['query'])
+        if options['query'] == "--last":
+            print(query_last_insert(), file=sys.stderr)
+        else:
+            query_from_db(options['query'])
         exit()
 
     if "cmd" not in options or "task" not in options:
